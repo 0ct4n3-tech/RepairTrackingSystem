@@ -29,9 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea7 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend7 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series7 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.panelTopCards = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.lblDateTime = new System.Windows.Forms.Label();
@@ -40,7 +37,6 @@
             this.panelTotal = new System.Windows.Forms.Panel();
             this.lblTotal = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panelPending = new System.Windows.Forms.Panel();
             this.lblPending = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
@@ -52,7 +48,6 @@
             this.panelTopCards.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panelTotal.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).BeginInit();
             this.panelPending.SuspendLayout();
             this.panelCompleted.SuspendLayout();
             this.SuspendLayout();
@@ -62,14 +57,13 @@
             this.panelTopCards.Controls.Add(this.panel2);
             this.panelTopCards.Controls.Add(this.btnExport);
             this.panelTopCards.Controls.Add(this.panelTotal);
-            this.panelTopCards.Controls.Add(this.chart1);
             this.panelTopCards.Controls.Add(this.panelPending);
             this.panelTopCards.Controls.Add(this.panelCompleted);
             this.panelTopCards.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelTopCards.Location = new System.Drawing.Point(0, 0);
             this.panelTopCards.Margin = new System.Windows.Forms.Padding(2);
             this.panelTopCards.Name = "panelTopCards";
-            this.panelTopCards.Size = new System.Drawing.Size(620, 158);
+            this.panelTopCards.Size = new System.Drawing.Size(620, 168);
             this.panelTopCards.TabIndex = 10;
             // 
             // panel2
@@ -158,26 +152,6 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Total Repairs";
             // 
-            // chart1
-            // 
-            chartArea7.Name = "ChartArea1";
-            this.chart1.ChartAreas.Add(chartArea7);
-            this.chart1.Enabled = false;
-            legend7.Name = "Legend1";
-            this.chart1.Legends.Add(legend7);
-            this.chart1.Location = new System.Drawing.Point(415, 8);
-            this.chart1.Margin = new System.Windows.Forms.Padding(2);
-            this.chart1.Name = "chart1";
-            series7.ChartArea = "ChartArea1";
-            series7.Legend = "Legend1";
-            series7.Name = "Series1";
-            this.chart1.Series.Add(series7);
-            this.chart1.Size = new System.Drawing.Size(225, 244);
-            this.chart1.TabIndex = 11;
-            this.chart1.Text = "chart1";
-            this.chart1.Visible = false;
-            this.chart1.Click += new System.EventHandler(this.chart1_Click);
-            // 
             // panelPending
             // 
             this.panelPending.AutoSize = true;
@@ -255,7 +229,7 @@
             // 
             // webBrowser1
             // 
-            this.webBrowser1.Location = new System.Drawing.Point(11, 163);
+            this.webBrowser1.Location = new System.Drawing.Point(11, 166);
             this.webBrowser1.MinimumSize = new System.Drawing.Size(20, 20);
             this.webBrowser1.Name = "webBrowser1";
             this.webBrowser1.Size = new System.Drawing.Size(597, 255);
@@ -280,7 +254,6 @@
             this.panel2.PerformLayout();
             this.panelTotal.ResumeLayout(false);
             this.panelTotal.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.chart1)).EndInit();
             this.panelPending.ResumeLayout(false);
             this.panelPending.PerformLayout();
             this.panelCompleted.ResumeLayout(false);
@@ -303,7 +276,6 @@
         private System.Windows.Forms.Panel panelCompleted;
         private System.Windows.Forms.Label lblCompleted;
         private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
         private System.Windows.Forms.Button btnExport;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.Label lblDateTime;

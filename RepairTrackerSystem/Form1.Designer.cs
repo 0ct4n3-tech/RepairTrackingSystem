@@ -38,12 +38,14 @@
             this.btnDashboard = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.panelMain = new System.Windows.Forms.Panel();
+            this.btnAnalytics = new System.Windows.Forms.Button();
             this.panelSidebar.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelSidebar
             // 
             this.panelSidebar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(30)))), ((int)(((byte)(40)))), ((int)(((byte)(60)))));
+            this.panelSidebar.Controls.Add(this.btnAnalytics);
             this.panelSidebar.Controls.Add(this.btnLogout);
             this.panelSidebar.Controls.Add(this.btnRepairs);
             this.panelSidebar.Controls.Add(this.btnReports);
@@ -54,9 +56,9 @@
             this.panelSidebar.Controls.Add(this.label1);
             this.panelSidebar.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelSidebar.Location = new System.Drawing.Point(0, 0);
-            this.panelSidebar.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelSidebar.Margin = new System.Windows.Forms.Padding(2);
             this.panelSidebar.Name = "panelSidebar";
-            this.panelSidebar.Padding = new System.Windows.Forms.Padding(8, 8, 8, 8);
+            this.panelSidebar.Padding = new System.Windows.Forms.Padding(8);
             this.panelSidebar.Size = new System.Drawing.Size(150, 414);
             this.panelSidebar.TabIndex = 0;
             // 
@@ -67,8 +69,8 @@
             this.btnLogout.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnLogout.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnLogout.ForeColor = System.Drawing.Color.White;
-            this.btnLogout.Location = new System.Drawing.Point(0, 323);
-            this.btnLogout.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnLogout.Location = new System.Drawing.Point(0, 364);
+            this.btnLogout.Margin = new System.Windows.Forms.Padding(2);
             this.btnLogout.Name = "btnLogout";
             this.btnLogout.Size = new System.Drawing.Size(150, 37);
             this.btnLogout.TabIndex = 7;
@@ -84,7 +86,7 @@
             this.btnRepairs.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnRepairs.ForeColor = System.Drawing.Color.White;
             this.btnRepairs.Location = new System.Drawing.Point(0, 177);
-            this.btnRepairs.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnRepairs.Margin = new System.Windows.Forms.Padding(2);
             this.btnRepairs.Name = "btnRepairs";
             this.btnRepairs.Size = new System.Drawing.Size(150, 37);
             this.btnRepairs.TabIndex = 4;
@@ -100,7 +102,7 @@
             this.btnReports.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnReports.ForeColor = System.Drawing.Color.White;
             this.btnReports.Location = new System.Drawing.Point(0, 260);
-            this.btnReports.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnReports.Margin = new System.Windows.Forms.Padding(2);
             this.btnReports.Name = "btnReports";
             this.btnReports.Size = new System.Drawing.Size(150, 37);
             this.btnReports.TabIndex = 6;
@@ -116,7 +118,7 @@
             this.btnTechnicians.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnTechnicians.ForeColor = System.Drawing.Color.White;
             this.btnTechnicians.Location = new System.Drawing.Point(0, 219);
-            this.btnTechnicians.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnTechnicians.Margin = new System.Windows.Forms.Padding(2);
             this.btnTechnicians.Name = "btnTechnicians";
             this.btnTechnicians.Size = new System.Drawing.Size(150, 37);
             this.btnTechnicians.TabIndex = 5;
@@ -132,7 +134,7 @@
             this.btnDevices.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDevices.ForeColor = System.Drawing.Color.White;
             this.btnDevices.Location = new System.Drawing.Point(0, 136);
-            this.btnDevices.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDevices.Margin = new System.Windows.Forms.Padding(2);
             this.btnDevices.Name = "btnDevices";
             this.btnDevices.Size = new System.Drawing.Size(150, 37);
             this.btnDevices.TabIndex = 3;
@@ -148,7 +150,7 @@
             this.btnCustomers.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnCustomers.ForeColor = System.Drawing.Color.White;
             this.btnCustomers.Location = new System.Drawing.Point(0, 94);
-            this.btnCustomers.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnCustomers.Margin = new System.Windows.Forms.Padding(2);
             this.btnCustomers.Name = "btnCustomers";
             this.btnCustomers.Size = new System.Drawing.Size(150, 37);
             this.btnCustomers.TabIndex = 2;
@@ -164,7 +166,7 @@
             this.btnDashboard.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.btnDashboard.ForeColor = System.Drawing.Color.White;
             this.btnDashboard.Location = new System.Drawing.Point(0, 53);
-            this.btnDashboard.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.btnDashboard.Margin = new System.Windows.Forms.Padding(2);
             this.btnDashboard.Name = "btnDashboard";
             this.btnDashboard.Size = new System.Drawing.Size(150, 37);
             this.btnDashboard.TabIndex = 1;
@@ -189,11 +191,27 @@
             this.panelMain.BackColor = System.Drawing.Color.White;
             this.panelMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelMain.Location = new System.Drawing.Point(150, 0);
-            this.panelMain.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.panelMain.Margin = new System.Windows.Forms.Padding(2);
             this.panelMain.Name = "panelMain";
             this.panelMain.Size = new System.Drawing.Size(605, 414);
             this.panelMain.TabIndex = 1;
             this.panelMain.Paint += new System.Windows.Forms.PaintEventHandler(this.panelMain_Paint);
+            // 
+            // btnAnalytics
+            // 
+            this.btnAnalytics.FlatAppearance.BorderSize = 0;
+            this.btnAnalytics.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(50)))), ((int)(((byte)(70)))), ((int)(((byte)(100)))));
+            this.btnAnalytics.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAnalytics.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btnAnalytics.ForeColor = System.Drawing.Color.White;
+            this.btnAnalytics.Location = new System.Drawing.Point(0, 301);
+            this.btnAnalytics.Margin = new System.Windows.Forms.Padding(2);
+            this.btnAnalytics.Name = "btnAnalytics";
+            this.btnAnalytics.Size = new System.Drawing.Size(150, 37);
+            this.btnAnalytics.TabIndex = 8;
+            this.btnAnalytics.Text = "Analytics";
+            this.btnAnalytics.UseVisualStyleBackColor = true;
+            this.btnAnalytics.Click += new System.EventHandler(this.btnAnalytics_Click);
             // 
             // Form1
             // 
@@ -203,7 +221,7 @@
             this.Controls.Add(this.panelMain);
             this.Controls.Add(this.panelSidebar);
             this.Location = new System.Drawing.Point(620, 20);
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.MaximizeBox = false;
             this.Name = "Form1";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -227,6 +245,7 @@
         private System.Windows.Forms.Button btnDevices;
         private System.Windows.Forms.Button btnCustomers;
         private System.Windows.Forms.Panel panelMain;
+        private System.Windows.Forms.Button btnAnalytics;
     }
 }
 

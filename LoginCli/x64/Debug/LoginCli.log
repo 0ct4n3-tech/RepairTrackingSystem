@@ -1,3 +1,5 @@
 ﻿  LoginCli.cpp
-C:\Users\Admin\source\repos\RepairTrackerSystem\LoginCli\LoginCli.cpp(67,19): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
-  LoginCli.vcxproj -> C:\Users\Admin\source\repos\RepairTrackerSystem\x64\Debug\LoginCli.exe
+C:\Users\Lenovo\Documents\College 2nd Year\2nd Semester\PL101\Git Repo - Repair_Tracker_System\LoginCli\LoginCli.cpp(67,19): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  LoginCli.vcxproj -> C:\Users\Lenovo\Documents\College 2nd Year\2nd Semester\PL101\Git Repo - Repair_Tracker_System\x64\Debug\LoginCli.exe
+  'pwsh.exe' is not recognized as an internal or external command,
+  operable program or batch file.

@@ -98,11 +98,11 @@ namespace RepairTrackerSystem
                     {
                         if (r.Read())
                         {
-                            _total = Convert.ToInt32(r["Total"]);
-                            _pending = Convert.ToInt32(r["Pending"]);
-                            _repairing = Convert.ToInt32(r["Repairing"]);
-                            _diagnosing = Convert.ToInt32(r["Diagnosing"]);
-                            _completed = Convert.ToInt32(r["Completed"]);
+                            _total = r["Total"] != DBNull.Value ? Convert.ToInt32(r["Total"]) : 0;
+                            _pending = r["Pending"] != DBNull.Value ? Convert.ToInt32(r["Pending"]) : 0;
+                            _repairing = r["Repairing"] != DBNull.Value ? Convert.ToInt32(r["Repairing"]) : 0;
+                            _diagnosing = r["Diagnosing"] != DBNull.Value ? Convert.ToInt32(r["Diagnosing"]) : 0;
+                            _completed = r["Completed"] != DBNull.Value ? Convert.ToInt32(r["Completed"]) : 0;
                         }
                     }
                 }
@@ -123,9 +123,12 @@ namespace RepairTrackerSystem
         // ─────────────────────────────────────────────────────────────────────
         private void UpdateSummaryCards()
         {
-            lblTotal.Text = _total.ToString();      // Total Repairs card
-            lblPending.Text = _pending.ToString();    // Pending Jobs card
-            lblCompleted.Text = _completed.ToString();  // Completed card
+            if (lblTotal != null)
+                lblTotal.Text = _total.ToString();
+            if (lblPending != null)
+                lblPending.Text = _pending.ToString();
+            if (lblCompleted != null)
+                lblCompleted.Text = _completed.ToString();
         }
 
         // ─────────────────────────────────────────────────────────────────────
@@ -135,6 +138,14 @@ namespace RepairTrackerSystem
         // ─────────────────────────────────────────────────────────────────────
         private void RenderChart()
         {
+            if (webBrowser1 == null)
+            {
+                MessageBox.Show("WebBrowser control not found. Please ensure webBrowser1 is added to the form.",
+                                "Control Error",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Error);
+                return;
+            }
             string today = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
 
             string html = $@"
@@ -402,18 +413,34 @@ namespace RepairTrackerSystem
                 {
                     var repairs = DatabaseService.GetRepairs();
 
+                    if (repairs == null)
+                    {
+                        MessageBox.Show("No repair data available to export.",
+                                        "Export CSV",
+                                        MessageBoxButtons.OK,
+                                        MessageBoxIcon.Information);
+                        return;
+                    }
+
                     var sb = new System.Text.StringBuilder();
                     sb.AppendLine("RepairID,CustomerID,DeviceID,TechnicianID,Status,Issue,Cost,DateReceived,DateUpdated");
 
                     foreach (var rep in repairs)
                     {
+                        // BUG FIX: Proper CSV field escaping (escape quotes by doubling them)
+                        string issueField = rep.Issue ?? "";
+                        if (issueField.Contains(",") || issueField.Contains("\"") || issueField.Contains("\n"))
+                        {
+                            issueField = "\"" + issueField.Replace("\"", "\"\"") + "\"";
+                        }
+
                         sb.AppendLine(string.Join(",",
                             rep.RepairID,
                             rep.CustomerID,
                             rep.DeviceID,
                             rep.TechnicianID,
                             rep.Status,
-                            $"\"{rep.Issue?.Replace("\"", "'")}\"",
+                            issueField,
                             rep.Cost.ToString("F2"),
                             rep.DateReceived.ToString("yyyy-MM-dd"),
                             rep.DateUpdated?.ToString("yyyy-MM-dd") ?? ""

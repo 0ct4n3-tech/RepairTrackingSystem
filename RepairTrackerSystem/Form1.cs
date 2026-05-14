@@ -150,5 +150,10 @@ namespace RepairTrackerSystem
         {
             Application.Exit();
         }
+
+        private void btnAnalytics_Click(object sender, EventArgs e)
+        {
+            LoadForm(new AnalyticsForm());
+        }
     }
 }
