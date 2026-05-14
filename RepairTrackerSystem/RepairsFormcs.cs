@@ -65,9 +65,27 @@ namespace RepairTrackerSystem
                 });
             }
 
-            var list = DatabaseService.GetRepairs(filter, status);
+                var repairs = DatabaseService.GetRepairs();
 
-            foreach (var r in list)
+            // ✅ Filter by search term: Repair ID, Customer, Device, Technician, Status
+            if (!string.IsNullOrWhiteSpace(filter))
+            {
+                repairs = repairs.Where(r =>
+                    r.RepairID.ToLower().Contains(filter.ToLower()) ||
+                    DatabaseService.GetCustomer(r.CustomerID)?.Name?.ToLower().Contains(filter.ToLower()) == true ||
+                    DatabaseService.GetDevice(r.DeviceID)?.ToString()?.ToLower().Contains(filter.ToLower()) == true ||
+                    DatabaseService.GetTechnician(r.TechnicianID)?.Name?.ToLower().Contains(filter.ToLower()) == true ||
+                    r.Status.ToLower().Contains(filter.ToLower())
+                ).ToList();
+            }
+
+            // ✅ Filter by status
+            if (!string.IsNullOrWhiteSpace(status) && status != "All")
+            {
+                repairs = repairs.Where(r => r.Status == status).ToList();
+            }
+
+            foreach (var r in repairs)
             {
                 var customer = DatabaseService.GetCustomer(r.CustomerID)?.Name ?? "";
                 var device = DatabaseService.GetDevice(r.DeviceID)?.ToString() ?? "";
@@ -92,7 +110,7 @@ namespace RepairTrackerSystem
             string status = cbStatus.SelectedItem?.ToString();
             if (status == "All") status = null;
 
-            LoadRepairs(filter, status);
+            LoadRepairs(string.IsNullOrEmpty(filter) ? null : filter, status);
         }
 
         private void CbStatus_SelectedIndexChanged(object sender, EventArgs e)
@@ -103,7 +121,7 @@ namespace RepairTrackerSystem
             string status = cbStatus.SelectedItem?.ToString();
             if (status == "All") status = null;
 
-            LoadRepairs(filter, status);
+            LoadRepairs(string.IsNullOrEmpty(filter) ? null : filter, status);
         }
 
         private void TxtSearchRepair_Enter(object sender, EventArgs e)
@@ -166,7 +184,7 @@ namespace RepairTrackerSystem
                 Text = "What do you want to edit?",
                 FormBorderStyle = FormBorderStyle.FixedDialog,
                 StartPosition = FormStartPosition.CenterParent,
-                Size = new Size(280, 230), // ✅ smaller since one less button
+                Size = new Size(280, 230),
                 MaximizeBox = false,
                 MinimizeBox = false
             };
@@ -199,7 +217,7 @@ namespace RepairTrackerSystem
 
             pickForm.Controls.AddRange(new Control[]
             {
-        btnStatus, btnCost, btnTechnician
+                btnStatus, btnCost, btnTechnician
             });
 
             pickForm.ShowDialog(this);
@@ -224,7 +242,7 @@ namespace RepairTrackerSystem
                 };
                 cb.Items.AddRange(new object[]
                 {
-                    "Pending", "Repairing", "Completed"
+                    "Pending", "Diagnosing", "Repairing", "Fixed", "Released"
                 });
                 cb.SelectedItem = repair.Status;
 
@@ -266,7 +284,6 @@ namespace RepairTrackerSystem
                 {
                     Location = new Point(10, 35),
                     Width = 320,
-                    // ✅ Pre-fill with current value
                     Text = field == "Issue" ? repair.Issue ?? "" : repair.Cost.ToString()
                 };
 
@@ -329,7 +346,6 @@ namespace RepairTrackerSystem
                 foreach (var t in technicians)
                     cb.Items.Add(t);
 
-                // ✅ Pre-select current technician
                 cb.SelectedItem = technicians.FirstOrDefault(t => t.ID == repair.TechnicianID);
 
                 var btnSave = new Button { Text = "Save", Location = new Point(170, 75), Width = 75 };
@@ -363,26 +379,9 @@ namespace RepairTrackerSystem
             }
         }
 
-        private void UpdateStatus(string repairId, string newStatus)
-        {
-            var r = DatabaseService.GetRepair(repairId);
-            if (r == null) return;
-            r.Status = newStatus;
-            r.DateUpdated = DateTime.Now;
-            DatabaseService.UpdateRepair(r);
-        }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-        }
-
-        private void panelRepairs_Paint(object sender, PaintEventArgs e) { }
-        private void cbStatus_SelectedIndexChanged_1(object sender, EventArgs e) { }
-
-        private void lblDateTime_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

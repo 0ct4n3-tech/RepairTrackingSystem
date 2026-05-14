@@ -65,7 +65,6 @@
             this.panelRepairs.Name = "panelRepairs";
             this.panelRepairs.Size = new System.Drawing.Size(702, 499);
             this.panelRepairs.TabIndex = 0;
-            this.panelRepairs.Paint += new System.Windows.Forms.PaintEventHandler(this.panelRepairs_Paint);
             // 
             // lblDateTime
             // 
@@ -78,7 +77,6 @@
             this.lblDateTime.Size = new System.Drawing.Size(110, 13);
             this.lblDateTime.TabIndex = 12;
             this.lblDateTime.Text = "MM/dd/yyyy hh:mm tt";
-            this.lblDateTime.Click += new System.EventHandler(this.lblDateTime_Click);
             // 
             // dgvCustomers
             // 
@@ -203,7 +201,7 @@
             this.cbStatus.Name = "cbStatus";
             this.cbStatus.Size = new System.Drawing.Size(116, 21);
             this.cbStatus.TabIndex = 6;
-            this.cbStatus.SelectedIndexChanged += new System.EventHandler(this.cbStatus_SelectedIndexChanged_1);
+            this.cbStatus.SelectedIndexChanged += new System.EventHandler(this.CbStatus_SelectedIndexChanged);
             // 
             // txtSearchRepair
             // 
@@ -212,7 +210,11 @@
             this.txtSearchRepair.Name = "txtSearchRepair";
             this.txtSearchRepair.Size = new System.Drawing.Size(151, 20);
             this.txtSearchRepair.TabIndex = 5;
+            this.txtSearchRepair.Text = "Search repairs...";
+            this.txtSearchRepair.ForeColor = System.Drawing.SystemColors.GrayText;
             this.txtSearchRepair.TextChanged += new System.EventHandler(this.TxtSearchRepair_TextChanged);
+            this.txtSearchRepair.Enter += new System.EventHandler(this.TxtSearchRepair_Enter);
+            this.txtSearchRepair.Leave += new System.EventHandler(this.TxtSearchRepair_Leave);
             // 
             // label11
             // 

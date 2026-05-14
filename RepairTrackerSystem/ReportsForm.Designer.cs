@@ -69,7 +69,6 @@
             // panel2
             // 
             this.panel2.BackColor = System.Drawing.Color.White;
-            this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel2.Controls.Add(this.lblDateTime);
             this.panel2.Controls.Add(this.label11);
             this.panel2.Location = new System.Drawing.Point(0, 0);
@@ -84,7 +83,7 @@
             this.lblDateTime.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.lblDateTime.AutoSize = true;
             this.lblDateTime.ForeColor = System.Drawing.Color.DimGray;
-            this.lblDateTime.Location = new System.Drawing.Point(481, 15);
+            this.lblDateTime.Location = new System.Drawing.Point(483, 15);
             this.lblDateTime.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDateTime.Name = "lblDateTime";
             this.lblDateTime.Size = new System.Drawing.Size(110, 13);
@@ -97,7 +96,7 @@
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Segoe UI", 17.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label11.ForeColor = System.Drawing.Color.DeepSkyBlue;
-            this.label11.Location = new System.Drawing.Point(6, 7);
+            this.label11.Location = new System.Drawing.Point(7, 5);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(245, 31);
