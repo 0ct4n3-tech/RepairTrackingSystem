@@ -463,6 +463,7 @@ namespace RepairTrackerSystem.Core
                 var cmd = new SQLiteCommand("DELETE FROM Repairs WHERE RepairID=@id", conn);
                 cmd.Parameters.AddWithValue("@id", id);
                 cmd.ExecuteNonQuery();
+
             }
         }
     }
