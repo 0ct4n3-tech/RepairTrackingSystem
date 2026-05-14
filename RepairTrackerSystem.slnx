@@ -1,0 +1,11 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="LoginCli/LoginCli.vcxproj" Id="15a9d22d-2a95-4aa0-abee-cf435fbc8c2c" />
+  <Project Path="RepairTrackerSystem.Core/RepairTrackerSystem.Core.csproj" Id="fd61c7f0-ebc4-4326-8db9-5c3cf710bb68" />
+  <Project Path="RepairTrackerSystem/RepairTrackerSystem.csproj" Id="24b10799-2a4f-4e81-ba21-5085e992f019" />
+  <Project Path="WindowsApp1/RepairDashboard.vbproj" Id="72174172-2f26-478e-8d3a-4b8c2810b6a8" />
+</Solution>
