@@ -100,9 +100,9 @@
             this.label11.Location = new System.Drawing.Point(6, 7);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(247, 31);
+            this.label11.Size = new System.Drawing.Size(245, 31);
             this.label11.TabIndex = 3;
-            this.label11.Text = "Reports and Analytics";
+            this.label11.Text = "Reports and Statistics";
             this.label11.Click += new System.EventHandler(this.label11_Click);
             // 
             // btnExport

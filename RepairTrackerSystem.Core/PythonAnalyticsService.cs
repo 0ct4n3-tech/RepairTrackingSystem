@@ -221,8 +221,8 @@ namespace RepairTrackerSystem.Core
                     Directory.CreateDirectory(outputFolder);
                 }
 
-                // Pass absolute database path to Python script
-                string fullArguments = $"\"{PythonScriptPath}\" {arguments} --db \"{dbPath}\"";
+                // Pass both database path AND output directory to Python script
+                string fullArguments = $"\"{PythonScriptPath}\" {arguments} --db \"{dbPath}\" --output \"{outputFolder}\"";
 
                 var processInfo = new ProcessStartInfo
                 {

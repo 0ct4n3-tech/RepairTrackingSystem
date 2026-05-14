@@ -25,13 +25,6 @@ class AnalyticsService:
             # Try to infer output directory relative to script location
             script_dir = Path(__file__).parent.parent  # Go up from analytics/
             self.output_dir = script_dir / "output" / "graphs"
-        # Use provided output_dir or default to solution root/output/graphs
-        if output_dir:
-            self.output_dir = Path(output_dir)
-        else:
-            # Try to infer output directory relative to script location
-            script_dir = Path(__file__).parent.parent  # Go up from analytics/
-            self.output_dir = script_dir / "output" / "graphs"
         
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -85,18 +78,24 @@ class AnalyticsService:
             fig, ax = plt.subplots(figsize=(12, 6))
             ax.plot(df['RepairDate'], df['RepairCount'], 
                    marker='o', linewidth=2.5, markersize=8, 
-                   color=self.colors['primary'])
+                   color=self.colors['primary'], label='Daily Repairs')
 
             ax.fill_between(df['RepairDate'], df['RepairCount'], 
                            alpha=0.3, color=self.colors['primary'])
 
-            ax.set_title('Repairs Per Day (Last 30 Days)', fontsize=16, fontweight='bold', pad=20)
+            # Add data labels on points
+            for x, y in zip(df['RepairDate'], df['RepairCount']):
+                ax.annotate(f'{int(y)}', (x, y), textcoords="offset points", 
+                           xytext=(0,10), ha='center', fontsize=9, fontweight='bold')
+
+            ax.set_title(f'Repairs Per Day (Last {days} Days)', fontsize=16, fontweight='bold', pad=20)
             ax.set_xlabel('Date', fontsize=12, fontweight='bold')
             ax.set_ylabel('Number of Repairs', fontsize=12, fontweight='bold')
             ax.xaxis.set_major_formatter(mdates.DateFormatter('%m/%d'))
             ax.xaxis.set_major_locator(mdates.DayLocator(interval=5))
             plt.xticks(rotation=45)
             ax.grid(True, alpha=0.3)
+            ax.legend(loc='upper left', fontsize=10)
 
             filename = self.output_dir / f"repairs_per_day_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             plt.tight_layout()
@@ -114,11 +113,11 @@ class AnalyticsService:
     # 2. ISSUE FREQUENCY (BAR CHART)
     # ═══════════════════════════════════════════════════════════════════════
     def generate_issue_frequency(self, top_n=10):
-        """Generate bar chart of most common issues"""
+        """Generate issue frequency chart"""
         try:
             conn = self.get_connection()
             query = f"""
-                SELECT 
+                SELECT
                     Issue,
                     COUNT(*) as Frequency
                 FROM Repairs
@@ -136,20 +135,17 @@ class AnalyticsService:
                 return None
 
             fig, ax = plt.subplots(figsize=(12, 6))
-            bars = ax.barh(range(len(df)), df['Frequency'], color=self.colors['accent'])
-
-            ax.set_yticks(range(len(df)))
-            ax.set_yticklabels(df['Issue'], fontsize=10)
-            ax.set_xlabel('Frequency', fontsize=12, fontweight='bold')
-            ax.set_title(f'Top {top_n} Most Common Issues', fontsize=16, fontweight='bold', pad=20)
-            ax.invert_yaxis()
+            bars = ax.barh(df['Issue'], df['Frequency'], color=self.colors['accent'])
 
             # Add value labels on bars
             for i, bar in enumerate(bars):
                 width = bar.get_width()
                 ax.text(width, bar.get_y() + bar.get_height()/2, 
-                       f'{int(width)}', ha='left', va='center', fontweight='bold')
+                       f'{int(width)}', ha='left', va='center', fontweight='bold', fontsize=10)
 
+            ax.set_title(f'Top {top_n} Most Common Issues', fontsize=16, fontweight='bold', pad=20)
+            ax.set_xlabel('Frequency', fontsize=12, fontweight='bold')
+            ax.set_ylabel('Issue Type', fontsize=12, fontweight='bold')
             ax.grid(True, alpha=0.3, axis='x')
 
             filename = self.output_dir / f"issue_frequency_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
@@ -165,22 +161,21 @@ class AnalyticsService:
             return None
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 3. TECHNICIAN PERFORMANCE (PIE CHART + TOP PERFORMERS)
+    # 3. TECHNICIAN PERFORMANCE (GROUPED BAR CHART)
     # ═══════════════════════════════════════════════════════════════════════
     def generate_technician_performance(self):
-        """Generate technician performance metrics"""
+        """Generate technician performance report"""
         try:
             conn = self.get_connection()
-
-            # Repairs completed per technician
             query = """
-                SELECT 
+                SELECT
                     COALESCE(t.Name, 'Unassigned') as Name,
                     COUNT(r.RepairID) as TotalRepairs,
                     SUM(CASE WHEN r.Status='Completed' THEN 1 ELSE 0 END) as CompletedRepairs,
-                    ROUND(AVG(r.Cost), 2) as AvgCost
+                    ROUND(AVG(CAST(r.Cost AS FLOAT)), 2) as AvgCost
                 FROM Repairs r
                 LEFT JOIN Technicians t ON r.TechnicianID = t.ID
+                WHERE r.Cost IS NOT NULL AND r.Cost > 0
                 GROUP BY r.TechnicianID
                 ORDER BY CompletedRepairs DESC
             """
@@ -189,31 +184,36 @@ class AnalyticsService:
             conn.close()
 
             if df.empty:
-                print("No technician data available")
+                print("No technician performance data available")
                 return None
 
-            # Pie chart - Repairs by technician
-            fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
+            # Replace NaN with 0
+            df['AvgCost'] = df['AvgCost'].fillna(0)
+            df['CompletedRepairs'] = df['CompletedRepairs'].fillna(0).astype(int)
+            df['TotalRepairs'] = df['TotalRepairs'].fillna(0).astype(int)
 
-            # Chart 1: Pie chart
-            ax1.pie(df['CompletedRepairs'], labels=df['Name'], autopct='%1.1f%%',
-                   colors=plt.cm.Set3(range(len(df))), startangle=90)
-            ax1.set_title('Completed Repairs by Technician', fontsize=14, fontweight='bold')
-
-            # Chart 2: Bar chart - Completed vs Total
+            fig, ax = plt.subplots(figsize=(12, 6))
             x = range(len(df))
             width = 0.35
-            ax2.bar([i - width/2 for i in x], df['TotalRepairs'], width, 
-                   label='Total Repairs', color=self.colors['primary'], alpha=0.8)
-            ax2.bar([i + width/2 for i in x], df['CompletedRepairs'], width, 
-                   label='Completed', color=self.colors['completed'], alpha=0.8)
 
-            ax2.set_xticks(x)
-            ax2.set_xticklabels(df['Name'], rotation=45, ha='right')
-            ax2.set_ylabel('Count', fontsize=12, fontweight='bold')
-            ax2.set_title('Technician Workload', fontsize=14, fontweight='bold')
-            ax2.legend()
-            ax2.grid(True, alpha=0.3, axis='y')
+            bars1 = ax.bar([i - width/2 for i in x], df['TotalRepairs'], width, 
+                          label='Total Repairs', color=self.colors['primary'], alpha=0.8)
+            bars2 = ax.bar([i + width/2 for i in x], df['CompletedRepairs'], width,
+                          label='Completed', color=self.colors['completed'], alpha=0.8)
+
+            # Add value labels on bars
+            for bars in [bars1, bars2]:
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height,
+                           f'{int(height)}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
+            ax.set_xticks(x)
+            ax.set_xticklabels(df['Name'], rotation=45, ha='right')
+            ax.set_title('Technician Performance Metrics', fontsize=16, fontweight='bold', pad=20)
+            ax.set_ylabel('Number of Repairs', fontsize=12, fontweight='bold')
+            ax.legend(fontsize=10)
+            ax.grid(True, alpha=0.3, axis='y')
 
             filename = self.output_dir / f"technician_performance_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             plt.tight_layout()
@@ -228,14 +228,14 @@ class AnalyticsService:
             return None
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 4. COST ANALYSIS
+    # 4. COST ANALYSIS (PIE CHART)
     # ═══════════════════════════════════════════════════════════════════════
     def generate_cost_analysis(self):
-        """Generate cost metrics by status"""
+        """Generate cost analysis by status"""
         try:
             conn = self.get_connection()
             query = """
-                SELECT 
+                SELECT
                     Status,
                     COUNT(*) as Count,
                     ROUND(SUM(Cost), 2) as TotalCost,
@@ -254,26 +254,26 @@ class AnalyticsService:
 
             fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
 
-            # Chart 1: Total cost by status
-            colors_map = [self.colors.get(s.lower(), '#999999') for s in df['Status']]
-            ax1.bar(df['Status'], df['TotalCost'], color=colors_map, alpha=0.8)
-            ax1.set_ylabel('Total Cost ($)', fontsize=12, fontweight='bold')
-            ax1.set_title('Total Revenue by Repair Status', fontsize=14, fontweight='bold')
-            ax1.grid(True, alpha=0.3, axis='y')
+            # Pie chart for cost distribution
+            colors_list = [self.colors.get(status.lower(), '#999999') for status in df['Status']]
+            wedges, texts, autotexts = ax1.pie(df['TotalCost'], labels=df['Status'], autopct='%1.1f%%',
+                                               colors=colors_list, startangle=90, textprops={'fontsize': 10, 'fontweight': 'bold'})
+            ax1.set_title('Cost Distribution by Status', fontsize=14, fontweight='bold')
 
-            # Add value labels
-            for i, v in enumerate(df['TotalCost']):
-                ax1.text(i, v + 50, f'${v:.2f}', ha='center', va='bottom', fontweight='bold')
+            # Bar chart for average cost
+            bars = ax2.bar(df['Status'], df['AvgCost'], color=colors_list, alpha=0.8)
+            ax2.set_title('Average Repair Cost by Status', fontsize=14, fontweight='bold')
+            ax2.set_ylabel('Average Cost (₱)', fontsize=11, fontweight='bold')
+            ax2.set_xlabel('Status', fontsize=11, fontweight='bold')
 
-            # Chart 2: Average cost by status
-            ax2.bar(df['Status'], df['AvgCost'], color=colors_map, alpha=0.8)
-            ax2.set_ylabel('Average Cost ($)', fontsize=12, fontweight='bold')
-            ax2.set_title('Average Cost by Repair Status', fontsize=14, fontweight='bold')
+            # Add value labels on bars
+            for bar in bars:
+                height = bar.get_height()
+                ax2.text(bar.get_x() + bar.get_width()/2., height,
+                        f'${height:.2f}', ha='center', va='bottom', fontsize=9, fontweight='bold')
+
             ax2.grid(True, alpha=0.3, axis='y')
-
-            # Add value labels
-            for i, v in enumerate(df['AvgCost']):
-                ax2.text(i, v + 5, f'${v:.2f}', ha='center', va='bottom', fontweight='bold')
+            plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45, ha='right')
 
             filename = self.output_dir / f"cost_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             plt.tight_layout()
@@ -288,14 +288,14 @@ class AnalyticsService:
             return None
 
     # ═══════════════════════════════════════════════════════════════════════
-    # 5. TREND ANALYSIS (WEEKLY/MONTHLY)
+    # 5. TREND ANALYSIS (STACKED AREA CHART)
     # ═══════════════════════════════════════════════════════════════════════
     def generate_trend_analysis(self):
         """Generate weekly trend analysis"""
         try:
             conn = self.get_connection()
             query = """
-                SELECT 
+                SELECT
                     strftime('%Y-W%W', DateReceived) as Week,
                     Status,
                     COUNT(*) as Count
@@ -312,20 +312,19 @@ class AnalyticsService:
                 print("No trend data available")
                 return None
 
-            # Pivot data for stacked area chart
+            # Pivot data for stacked chart
             pivot_df = df.pivot_table(index='Week', columns='Status', values='Count', fill_value=0)
 
             fig, ax = plt.subplots(figsize=(14, 6))
+            pivot_df.plot(kind='area', stacked=True, ax=ax, alpha=0.7,
+                         color=[self.colors.get(status.lower(), '#999999') for status in pivot_df.columns])
 
-            status_colors = [self.colors.get(s.lower(), '#999999') for s in pivot_df.columns]
-            pivot_df.plot(kind='area', stacked=True, ax=ax, color=status_colors, alpha=0.7)
-
+            ax.set_title('Repair Trends - Last 12 Weeks', fontsize=16, fontweight='bold', pad=20)
             ax.set_xlabel('Week', fontsize=12, fontweight='bold')
             ax.set_ylabel('Number of Repairs', fontsize=12, fontweight='bold')
-            ax.set_title('Repair Trends (Last 12 Weeks)', fontsize=16, fontweight='bold', pad=20)
-            ax.legend(loc='upper left', framealpha=0.9)
+            ax.legend(title='Status', loc='upper left', fontsize=10)
             ax.grid(True, alpha=0.3)
-            plt.xticks(rotation=45)
+            plt.setp(ax.xaxis.get_majorticklabels(), rotation=45, ha='right')
 
             filename = self.output_dir / f"trend_analysis_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
             plt.tight_layout()
@@ -343,24 +342,20 @@ class AnalyticsService:
     # GENERATE ALL REPORTS
     # ═══════════════════════════════════════════════════════════════════════
     def generate_all_reports(self):
-        """Generate all analytics reports"""
+        """Generate all available reports"""
         print("\n" + "="*60)
         print("REPAIR TRACKER — ANALYTICS REPORT GENERATION")
         print("="*60 + "\n")
-
-        results = {
-            'repairs_per_day': self.generate_repairs_per_day(),
-            'issue_frequency': self.generate_issue_frequency(),
-            'technician_performance': self.generate_technician_performance(),
-            'cost_analysis': self.generate_cost_analysis(),
-            'trend_analysis': self.generate_trend_analysis()
-        }
-
+        
+        self.generate_repairs_per_day(days=30)
+        self.generate_issue_frequency(top_n=10)
+        self.generate_technician_performance()
+        self.generate_cost_analysis()
+        self.generate_trend_analysis()
+        
         print("\n" + "="*60)
         print(f"All reports generated in: {self.output_dir}")
         print("="*60 + "\n")
-
-        return results
 
 
 if __name__ == "__main__":

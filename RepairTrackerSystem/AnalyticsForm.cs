@@ -238,6 +238,16 @@ namespace RepairTrackerSystem
         {
 
         }
+
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblDateTime_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────
