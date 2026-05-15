@@ -20,41 +20,23 @@ namespace RepairTrackerSystem
 
         private void DevicesForm_Load(object sender, EventArgs e)
         {
+            // wire events
             timer1.Start();
-            lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-            
+
+            lblDateTime.Text =
+                DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
             btnAddDevice.Click += BtnAddDevice_Click;
             dgvDevices.CellDoubleClick += DgvDevices_CellDoubleClick;
             dgvDevices.KeyDown += DgvDevices_KeyDown;
 
-            // Add search box setup
-            textBox1.Text = "Search devices...";
-            textBox1.ForeColor = Color.Gray;
-            textBox1.TextChanged += TextBox1_TextChanged;
-            textBox1.Enter += TextBox1_Enter;
-            textBox1.Leave += TextBox1_Leave;
 
             LoadDevices();
         }
 
-        private void LoadDevices(string filter = null)
+        private void LoadDevices()
         {
             dgvDevices.Rows.Clear();
-            var devices = DatabaseService.GetDevices();
-
-            // ✅ Search across ALL fields: ID, Type, Brand, Model, Owner
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                devices = devices.Where(d =>
-                    d.ID.ToLower().Contains(filter.ToLower()) ||
-                    d.Type.ToLower().Contains(filter.ToLower()) ||
-                    d.Brand.ToLower().Contains(filter.ToLower()) ||
-                    d.Model.ToLower().Contains(filter.ToLower()) ||
-                    DatabaseService.GetCustomer(d.CustomerID)?.Name?.ToLower().Contains(filter.ToLower()) == true
-                ).ToList();
-            }
-
-            foreach (var d in devices)
+            foreach (var d in DatabaseService.GetDevices())
             {
                 var owner = DatabaseService.GetCustomer(d.CustomerID)?.Name ?? "";
                 dgvDevices.Rows.Add(d.ID, d.Type, d.Brand, d.Model, owner);
@@ -66,24 +48,29 @@ namespace RepairTrackerSystem
             using (var f = new Form())
             {
                 f.Text = "Add Device";
-                f.Size = new Size(360, 340);
+                f.Size = new Size(360, 340); // Increased height to accommodate better spacing
                 f.FormBorderStyle = FormBorderStyle.FixedDialog;
                 f.StartPosition = FormStartPosition.CenterParent;
 
+                // Type Section
                 var lblType = new Label { Text = "Type", Location = new Point(15, 15), AutoSize = true };
                 var txtType = new TextBox { Location = new Point(15, 38), Width = 315 };
 
+                // Brand Section
                 var lblBrand = new Label { Text = "Brand", Location = new Point(15, 75), AutoSize = true };
                 var txtBrand = new TextBox { Location = new Point(15, 98), Width = 315 };
 
+                // Model Section
                 var lblModel = new Label { Text = "Model", Location = new Point(15, 135), AutoSize = true };
                 var txtModel = new TextBox { Location = new Point(15, 158), Width = 315 };
 
+                // Owner Section
                 var lblOwner = new Label { Text = "Owner", Location = new Point(15, 195), AutoSize = true };
                 var cbOwner = new ComboBox { Location = new Point(15, 218), Width = 315, DropDownStyle = ComboBoxStyle.DropDownList };
 
                 cbOwner.Items.AddRange(DatabaseService.GetCustomers().Cast<object>().ToArray());
 
+                // Buttons
                 var btnSave = new Button { Text = "Save", Location = new Point(165, 260), Width = 75 };
                 var btnCancel = new Button { Text = "Cancel", Location = new Point(250, 260), Width = 75 };
 
@@ -167,38 +154,15 @@ namespace RepairTrackerSystem
             }
         }
 
-        private void TextBox1_TextChanged(object sender, EventArgs e)
+        private void dgvCustomers_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            string filter = textBox1.Text.Trim();
-            if (filter == "Search devices...") filter = "";
 
-            LoadDevices(string.IsNullOrEmpty(filter) ? null : filter);
         }
 
-        private void TextBox1_Enter(object sender, EventArgs e)
-        {
-            if (textBox1.Text == "Search devices...")
-            {
-                textBox1.Text = "";
-                textBox1.ForeColor = Color.Black;
-            }
-        }
-
-        private void TextBox1_Leave(object sender, EventArgs e)
-        {
-            if (string.IsNullOrWhiteSpace(textBox1.Text))
-            {
-                textBox1.Text = "Search devices...";
-                textBox1.ForeColor = Color.Gray;
-            }
-        }
-
-        private void dgvCustomers_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
         private void timer1_Tick(object sender, EventArgs e)
         {
-            lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+            lblDateTime.Text =
+            DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
         }
-
-        private void lblDateTime_Click(object sender, EventArgs e) { }
     }
 }

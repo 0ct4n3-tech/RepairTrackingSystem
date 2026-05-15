@@ -21,8 +21,11 @@ namespace RepairTrackerSystem
 
         private void TechniciansForm_Load(object sender, EventArgs e)
         {
+
             timer1.Start();
-            lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+
+            lblDateTime.Text =
+            DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
 
             // wire events
             dgvTech.CellDoubleClick += DgvTech_CellDoubleClick;
@@ -31,27 +34,25 @@ namespace RepairTrackerSystem
             // Placeholder setup
             searchTech.Text = "Search technicians...";
             searchTech.ForeColor = Color.Gray;
-            searchTech.TextChanged += SearchTech_TextChanged;
+
             searchTech.Enter += SearchTech_Enter;
             searchTech.Leave += SearchTech_Leave;
 
             LoadTechnicians();
         }
-
         private void LoadTechnicians(string filter = null)
         {
-            dgvTech.Rows.Clear();
+            dgvTech.Rows.Clear(); // ✅ ADD THIS LINE
 
             var technicians = DatabaseService.GetTechnicians();
 
-            // ✅ Search across ALL fields: ID, Name, Specialty, Contact
             if (!string.IsNullOrWhiteSpace(filter))
             {
                 technicians = technicians.Where(t =>
-                    t.ID.ToLower().Contains(filter.ToLower()) ||
                     t.Name.ToLower().Contains(filter.ToLower()) ||
                     t.Specialty.ToLower().Contains(filter.ToLower()) ||
-                    t.Contact.ToLower().Contains(filter.ToLower())
+                    t.Contact.ToLower().Contains(filter.ToLower()) ||
+                    t.ID.ToLower().Contains(filter.ToLower())
                 ).ToList();
             }
 
@@ -68,6 +69,7 @@ namespace RepairTrackerSystem
             var tech = DatabaseService.GetTechnician(id);
             if (tech == null) return;
 
+            // edit dialog
             using (var f = new Form())
             {
                 f.Text = "Edit Technician";
@@ -106,21 +108,27 @@ namespace RepairTrackerSystem
             }
         }
 
-        private void label11_Click(object sender, EventArgs e) { }
-        private void dgvTech_CellContentClick(object sender, DataGridViewCellEventArgs e) { }
+        private void label11_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void dgvTech_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
 
         private void btnAddTech_Click(object sender, EventArgs e)
         {
             ShowTechnicianDialog();
         }
-
         private void ShowTechnicianDialog(Technician existing = null)
         {
             var form = new Form();
             form.Text = existing == null ? "Add Technician" : "Edit Technician";
             form.FormBorderStyle = FormBorderStyle.FixedDialog;
             form.StartPosition = FormStartPosition.CenterParent;
-            form.ClientSize = new Size(360, 330);
+            form.ClientSize = new Size(360, 330);   // FIXED HEIGHT
             form.MaximizeBox = false;
             form.MinimizeBox = false;
 
@@ -129,15 +137,19 @@ namespace RepairTrackerSystem
             int top = 15;
             int space = 55;
 
+            // --- Tech ID ---
             var lblID = new Label { Text = "Tech ID", Left = left, Top = top };
             var txtID = new TextBox { Left = left, Top = top + 20, Width = width };
 
+            // --- Name ---
             top += space;
             var lblName = new Label { Text = "Name", Left = left, Top = top };
             var txtName = new TextBox { Left = left, Top = top + 20, Width = width };
 
+            // --- Specialty ---
             top += space;
             var lblSpec = new Label { Text = "Specialty", Left = left, Top = top };
+
             var cmbSpec = new ComboBox
             {
                 Left = left,
@@ -145,37 +157,68 @@ namespace RepairTrackerSystem
                 Width = width,
                 DropDownStyle = ComboBoxStyle.DropDownList
             };
-            cmbSpec.Items.AddRange(new string[] { "Hardware", "Software" });
 
+            cmbSpec.Items.AddRange(new string[]
+            {
+        "Hardware",
+        "Software"
+            });
+
+            // --- Contact ---
             top += space;
             var lblContact = new Label { Text = "Contact", Left = left, Top = top };
             var txtContact = new TextBox { Left = left, Top = top + 20, Width = width };
 
-            var btnSave = new Button { Text = "Save", Width = 80, Left = 170, Top = 260 };
-            var btnCancel = new Button { Text = "Cancel", Width = 80, Left = 260, Top = 260 };
+            // --- Buttons ---
+            var btnSave = new Button
+            {
+                Text = "Save",
+                Width = 80,
+                Left = 170,
+                Top = 260
+            };
 
+            var btnCancel = new Button
+            {
+                Text = "Cancel",
+                Width = 80,
+                Left = 260,
+                Top = 260
+            };
+
+            // ======================
+            // EDIT MODE
+            // ======================
             if (existing != null)
             {
                 txtID.Text = existing.ID;
                 txtID.Enabled = false;
+
                 txtName.Text = existing.Name;
                 cmbSpec.Text = existing.Specialty;
                 txtContact.Text = existing.Contact;
             }
 
+            // ======================
+            // SAVE LOGIC (DATABASE CONNECTED)
+            // ======================
             btnSave.Click += (s, e) =>
             {
                 if (string.IsNullOrWhiteSpace(txtID.Text) ||
                     string.IsNullOrWhiteSpace(txtName.Text) ||
                     cmbSpec.SelectedIndex < 0)
                 {
-                    MessageBox.Show("Please complete all required fields.",
-                        "Validation", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(
+                        "Please complete all required fields.",
+                        "Validation",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Warning);
                     return;
                 }
 
                 if (existing == null)
                 {
+                    // ADD NEW TECHNICIAN
                     var tech = new Technician
                     {
                         ID = txtID.Text.Trim(),
@@ -183,18 +226,23 @@ namespace RepairTrackerSystem
                         Specialty = cmbSpec.Text,
                         Contact = txtContact.Text.Trim()
                     };
+
                     DatabaseService.AddTechnician(tech);
                 }
                 else
                 {
+                    // UPDATE TECHNICIAN
                     existing.Name = txtName.Text.Trim();
                     existing.Specialty = cmbSpec.Text;
                     existing.Contact = txtContact.Text.Trim();
+
                     DatabaseService.UpdateTechnician(existing);
                 }
 
                 form.DialogResult = DialogResult.OK;
                 form.Close();
+
+                // refresh grid
                 LoadTechnicians();
             };
 
@@ -202,22 +250,26 @@ namespace RepairTrackerSystem
 
             form.Controls.AddRange(new Control[]
             {
-                lblID, txtID, lblName, txtName,
-                lblSpec, cmbSpec, lblContact, txtContact,
-                btnSave, btnCancel
+        lblID, txtID,
+        lblName, txtName,
+        lblSpec, cmbSpec,
+        lblContact, txtContact,
+        btnSave, btnCancel
             });
 
             form.ShowDialog(this);
         }
 
-            private void SearchTech_TextChanged(object sender, EventArgs e)
+        private void searchTech_TextChanged(object sender, EventArgs e)
         {
             string filter = searchTech.Text.Trim();
-            if (filter == "Search technicians...") filter = "";
 
-            LoadTechnicians(string.IsNullOrEmpty(filter) ? null : filter);
+            if (string.IsNullOrEmpty(filter) || filter == "Search technicians...")
+                LoadTechnicians();
+            else
+                LoadTechnicians(filter);
+
         }
-
         private void SearchTech_Enter(object sender, EventArgs e)
         {
             if (searchTech.Text == "Search technicians...")
@@ -236,11 +288,16 @@ namespace RepairTrackerSystem
             }
         }
 
-        private void panel2_Paint(object sender, PaintEventArgs e) { }
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
+            lblDateTime.Text =
+                DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
         }
+    
     }
 }

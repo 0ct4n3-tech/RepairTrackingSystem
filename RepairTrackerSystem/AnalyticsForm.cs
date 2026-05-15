@@ -16,10 +16,6 @@ namespace RepairTrackerSystem
 
         private void AnalyticsForm_Load(object sender, EventArgs e)
         {
-            timer1.Interval = 1000;
-            timer1.Tick += (s, ev) => lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
-            timer1.Start();
-            lblDateTime.Text = DateTime.Now.ToString("MM/dd/yyyy hh:mm tt");
             CheckPythonInstallation();
         }
 

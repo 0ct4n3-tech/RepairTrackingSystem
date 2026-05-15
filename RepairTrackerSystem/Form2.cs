@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Drawing;
-using System.Linq;
 using System.Windows.Forms;
 using RepairTrackerSystem.Core;
 
@@ -65,20 +64,8 @@ namespace RepairTrackerSystem
                 });
             }
 
-            var customers = DatabaseService.GetCustomers();
-
-            // ✅ Search across ALL fields: ID, Name, Contact, Address
-            if (!string.IsNullOrWhiteSpace(filter))
-            {
-                customers = customers.Where(c =>
-                    c.ID.ToLower().Contains(filter.ToLower()) ||
-                    c.Name.ToLower().Contains(filter.ToLower()) ||
-                    c.Contact.ToLower().Contains(filter.ToLower()) ||
-                    c.Address.ToLower().Contains(filter.ToLower())
-                ).ToList();
-            }
-
-            foreach (var c in customers)
+            var list = DatabaseService.GetCustomers(filter);
+            foreach (var c in list)
                 dgvCustomers.Rows.Add(c.ID, c.Name, c.Contact, c.Address);
         }
 
@@ -103,9 +90,10 @@ namespace RepairTrackerSystem
         private void TxtSearch1_TextChanged(object sender, EventArgs e)
         {
             string filter = txtSearch1.Text.Trim();
-            if (filter == "Search customers...") filter = "";
-
-            LoadCustomers(string.IsNullOrEmpty(filter) ? null : filter);
+            if (string.IsNullOrEmpty(filter) || filter == "Search customers...")
+                LoadCustomers();
+            else
+                LoadCustomers(filter);
         }
 
         private void BtnAddCustomer_Click(object sender, EventArgs e)
@@ -148,7 +136,7 @@ namespace RepairTrackerSystem
         {
             if (existing == null)
             {
-                // ADD new customer
+                // ADD new customer — same as before
                 var form = new Form();
                 form.Text = "Add Customer";
                 form.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -189,15 +177,15 @@ namespace RepairTrackerSystem
 
                 form.Controls.AddRange(new System.Windows.Forms.Control[]
                 {
-                    lblName, txtName, lblContact, txtContact,
-                    lblAddress, txtAddress, btnSave, btnCancel
+            lblName, txtName, lblContact, txtContact,
+            lblAddress, txtAddress, btnSave, btnCancel
                 });
 
                 form.ShowDialog();
                 return;
             }
 
-            // EDIT — ask which field to edit
+            // ✅ EDIT — first ask which field to edit
             var pickForm = new Form();
             pickForm.Text = "What do you want to edit?";
             pickForm.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -228,6 +216,7 @@ namespace RepairTrackerSystem
                 Height = 35
             };
 
+            // ✅ Each button only edits ONE field and leaves the rest untouched
             btnEditName.Click += (s, e) =>
             {
                 pickForm.Close();
@@ -248,14 +237,16 @@ namespace RepairTrackerSystem
 
             pickForm.Controls.AddRange(new System.Windows.Forms.Control[]
             {
-                btnEditName, btnEditContact, btnEditAddress
+        btnEditName, btnEditContact, btnEditAddress
             });
 
             pickForm.ShowDialog(this);
         }
 
+        // ✅ Edits exactly one field — never touches the others
         private void EditSingleField(Customer existing, string field)
         {
+            // Always reload fresh from DB
             var fresh = DatabaseService.GetCustomer(existing.ID);
             if (fresh == null) return;
 
@@ -277,6 +268,7 @@ namespace RepairTrackerSystem
             {
                 Location = new Point(10, 35),
                 Width = 320,
+                // ✅ Pre-fill with current value
                 Text = field == "Name" ? fresh.Name ?? "" :
                        field == "Contact" ? fresh.Contact ?? "" :
                                             fresh.Address ?? ""
@@ -294,6 +286,7 @@ namespace RepairTrackerSystem
                     return;
                 }
 
+                // ✅ Only update the one chosen field
                 if (field == "Name") fresh.Name = txt.Text.Trim();
                 if (field == "Contact") fresh.Contact = txt.Text.Trim();
                 if (field == "Address") fresh.Address = txt.Text.Trim();
@@ -309,11 +302,14 @@ namespace RepairTrackerSystem
 
             form.Controls.AddRange(new System.Windows.Forms.Control[]
             {
-                lbl, txt, btnSave, btnCancel
+        lbl, txt, btnSave, btnCancel
             });
 
             form.ShowDialog(this);
         }
+
+        // ✅ dgvCustomers_RowValidated removed — it was conflicting with
+        // ShowCustomerDialog by triggering extra saves from grid cell edits
 
         private void timerClock_Tick(object sender, EventArgs e)
         {
@@ -324,7 +320,10 @@ namespace RepairTrackerSystem
         private void panelCustomers_Paint(object sender, PaintEventArgs e) { }
         private void panelHeader_Paint(object sender, PaintEventArgs e) { }
         private void panelCustomers_Paint_1(object sender, PaintEventArgs e) { }
-        private void lblDateTime_Click(object sender, EventArgs e) { }
-        private void txtSearch_TextChanged(object sender, EventArgs e) { }
+
+        private void lblDateTime_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }
